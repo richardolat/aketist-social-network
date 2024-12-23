@@ -10,30 +10,44 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the code
+      # 1. Checkout the code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Install Node.js
+      # 2. Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      # Install dependencies
+      # 3. Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # Build the application
-      - name: Build application
-        run: npm run build
+      # 4. Run tests (optional but recommended)
+      # You can skip this step if you don't have tests defined
+      - name: Run tests
+        run: |
+          if [ -f package.json ]; then
+            npm test || echo "No tests defined, skipping test step."
+          fi
 
-      # Deploy to AWS Elastic Beanstalk
+      # 5. Skip build step (because no build script is defined)
+      # - name: Build application
+      #   run: npm run build
+
+      # 6. Deploy to AWS Elastic Beanstalk
       - name: Deploy to Elastic Beanstalk
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1
         run: |
-          eb init -p node.js nodejs-aws-app --region $AWS_REGION
+          # Initialize the Elastic Beanstalk application
+          eb init -p node.js aketist-social-network --region $AWS_REGION
+
+          # Set the default environment for the application
+          eb use aketist-social-network-env
+
+          # Deploy the application
           eb deploy
