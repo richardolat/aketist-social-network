@@ -40,8 +40,8 @@ jobs:
           export PATH=$PATH:$HOME/.local/bin
           eb --version # Verify installation
 
-      # 6. Deploy to AWS Elastic Beanstalk
-      - name: Deploy to Elastic Beanstalk
+      # 6. Check and Create Elastic Beanstalk Environment
+      - name: Initialize Elastic Beanstalk Environment
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -50,8 +50,20 @@ jobs:
           # Initialize the Elastic Beanstalk application
           eb init -p node.js aketist-social-network --region $AWS_REGION
 
-          # Set the default environment for the application
-          eb use aketist-social-network-env
+          # Check if the environment exists
+          if eb status --verbose | grep -q "No environment found for application"; then
+            echo "Environment does not exist. Creating a new environment..."
+            eb create aketist-social-network-env --region $AWS_REGION --platform node.js
+          else
+            echo "Environment exists. Proceeding with deployment..."
+          fi
 
-          # Deploy the application
+      # 7. Deploy to AWS Elastic Beanstalk
+      - name: Deploy to Elastic Beanstalk
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1
+        run: |
+          eb use aketist-social-network-env
           eb deploy
