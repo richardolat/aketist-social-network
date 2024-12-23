@@ -1,0 +1,19 @@
+{
+  "name": "aketist-social-network",
+  "version": "1.0.0",
+  "description": "AKETIST Social Network Project",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
