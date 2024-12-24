@@ -51,5 +51,4 @@ jobs:
             echo "Environment exists. Proceeding with deployment."
             eb use aketist-social-network-env
           fi
-
           eb deploy
